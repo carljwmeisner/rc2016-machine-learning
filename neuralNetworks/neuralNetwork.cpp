@@ -17,11 +17,12 @@ Neural_Network_t::Neural_Network_t(int inputs, int layers, int outputs){
     number_of_layers = layers;
     number_of_outputs = outputs;
     //this->layers.push_back(new Neural_Network_Layer_t(inputs,inputs));
+    //create hidden layers
     for(int i = 0; i < number_of_layers; i++){
         this->layers.push_back(new Neural_Network_Layer_t(inputs,inputs));
         //this->layers[i]->weights(0,0) = i;
     }
-    this->layers.push_back(new Neural_Network_Layer_t(inputs,outputs));
+    this->layers.push_back(new Neural_Network_Layer_t(inputs,outputs)); //creates one last layer - output layer
     
 }
 
@@ -64,8 +65,20 @@ bool Neural_Network_t::forwardPropigation(std::vector<double> inputs){
     return true;
 }
 
+
+
 bool Neural_Network_t::backPropigation(std::vector<double> answers){
     std::cout << "Calling backward propigation.\n";
+    //set deltas to 0
+    for(int i=0; i<number_of_layers+1; i++){
+      layers[i]->deltas.zeros();
+    }
+    //for all training data
+    //assume data is in train
+    {
+      
+    }
+    
     return true;
 }
 
@@ -90,7 +103,7 @@ Neural_Network_Layer_t::Neural_Network_Layer_t(int nodes_ahead, int nodes_in_lay
     weights = temp1;
     deltas = temp2;
     weights.fill(1);
-    deltas.fill(1);
+    deltas.fill(0);
     for(int i = 0; i < nodes_in_layer; i++){
         values << 0;
         singleDelta << 0;
