@@ -5,7 +5,7 @@
 //
 //  Created by Gableman, Michael on 2/2/16.
 //  Added helper functions for back propagation Carl M. 4/19/16
-//
+//  This is a comment.
 
 #ifndef Neural_Network_t_hpp
 #define Neural_Network_t_hpp
