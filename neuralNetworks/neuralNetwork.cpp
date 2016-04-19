@@ -82,6 +82,22 @@ bool Neural_Network_t::backPropigation(std::vector<double> answers){
     return true;
 }
 
+//steps 3 and 4 in our back propagation flow chart
+bool Neural_Network_t::getDeltas(std::vector<double>answers){
+  //in final output layer, calculate singleDeltas
+  arma::vec temp(answers);
+  layers[number_of_layers+1] ->singleDelta = layers[number_of_layers+1]-> values - temp;
+  //compute singleDeltas for layers L-1 until L^1 (not input layer)
+  for(int i=number_of_layers; i>=1; i--){
+    layers[i] -> singleDelta = (layers[i] -> weights.t() * layers[i+1] -> singleDelta) % (layers[i] ->values % (1-layers[i] ->values));
+  }
+  //adjust weights for each layer
+  for(int i=number_of_layers; i>=1; i--){
+    layers[i] -> deltas += layers[i+1] -> singleDelta * layers[i] -> value.t();
+  }
+}
+
+
 std::vector<double> Neural_Network_t::sendData(std::vector<double> inputs){
     std::cout << "Calculating values...\n";
     forwardPropigation(inputs);
