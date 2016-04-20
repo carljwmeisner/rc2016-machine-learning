@@ -7,6 +7,7 @@
 //
 
 #include "neuralNetwork.h"
+#include "data.h"
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -36,12 +37,12 @@ void Neural_Network_t::showNetworkInfo(){
 }
 
 bool Neural_Network_t::forwardPropigation(std::vector<double> inputs){
-    std::cout << "Calling forward propigation.\n";
+    //std::cout << "Calling forward propigation.\n";
     std::vector<double > tempOut;
     inputs.insert(inputs.begin(),1);
     layers[0]->values = inputs;
-    std::cout << "Values of layer " << 0 << " : ";
-    layers[0]->values.print();
+    //std::cout << "Values of layer " << 0 << " : ";
+    //layers[0]->values.print();
     for(int i = 1; i < layers.size(); i++){
         //layers[i-1]->weights.print();
         //layers[i-1]->values.print();
@@ -49,34 +50,37 @@ bool Neural_Network_t::forwardPropigation(std::vector<double> inputs){
         tempOut = arma::conv_to<std::vector<double> >::from(layers[i]->values);
         tempOut.insert(tempOut.begin(),1);
         layers[i]->values = tempOut;
-        std::cout << "Values of layer " << i << " : ";
+        //std::cout << "Values of layer " << i << " : ";
         //layers[i]->values.print();
         layers[i]->evalf();
         //std::cout << "Altered : ";
-        layers[i]->values.print();
+        //layers[i]->values.print();
     }
     finalValues = (layers[layers.size()-1]->weights * layers[layers.size()-1]->values);
     tempOut = arma::conv_to<std::vector<double> >::from(finalValues);
     tempOut.insert(tempOut.begin(),1);
+    for(int i = 1; i < tempOut.size(); i++)
+    {
+        tempOut[i] = (1/(1+std::exp(-tempOut[i])));
+    }
     finalValues = tempOut;
 
-    std::cout << "Final Values : ";
-    finalValues.print();
+    //std::cout << "Final Values : ";
+    //finalValues.print();
     return true;
 }
 
 
 
-bool Neural_Network_t::backPropigation(std::vector<double> answers){
-    std::cout << "Calling backward propigation.\n";
+bool Neural_Network_t::backPropigation(std::vector< std::vector<double> > inputs, std::vector< std::vector<double> > answers){
+    //std::cout << "Calling backward propigation.\n";
     //set deltas to 0
     for(int i=0; i<number_of_layers+1; i++){
       layers[i]->deltas.zeros();
     }
-    //for all training data
-    //assume data is in train
-    {
-      
+    for(int i = 0; i < inputs.size(); i++){
+        forwardPropigation(inputs[i]);
+        getDeltas(answers[i]);
     }
     
     return true;
@@ -86,27 +90,48 @@ bool Neural_Network_t::backPropigation(std::vector<double> answers){
 bool Neural_Network_t::getDeltas(std::vector<double>answers){
   //in final output layer, calculate singleDeltas
   arma::vec temp(answers);
-  layers[number_of_layers+1] ->singleDelta = layers[number_of_layers+1]-> values - temp;
+    layers[number_of_layers] ->singleDelta = finalValues - temp[0];
   //compute singleDeltas for layers L-1 until L^1 (not input layer)
-  for(int i=number_of_layers; i>=1; i--){
-    layers[i] -> singleDelta = (layers[i] -> weights.t() * layers[i+1] -> singleDelta) % (layers[i] ->values % (1-layers[i] ->values));
+  for(int i=number_of_layers-1; i>=0; i--){
+      if(i != number_of_layers-1){
+          layers[i+1] -> singleDelta= layers[i+1] -> singleDelta.subvec(1,layers[i+1] -> singleDelta.size()-1);
+      }
+      layers[i] -> singleDelta = (layers[i] -> weights.t() * layers[i+1] -> singleDelta) % (layers[i] ->values % (1-layers[i] ->values));
   }
   //adjust weights for each layer
-  for(int i=number_of_layers; i>=1; i--){
-    layers[i] -> deltas += layers[i+1] -> singleDelta * layers[i] -> value.t();
+  for(int i=number_of_layers-1; i>=0; i--){
+    layers[i] -> deltas += layers[i+1] -> singleDelta * layers[i] -> values.t();
   }
 }
 
 
 std::vector<double> Neural_Network_t::sendData(std::vector<double> inputs){
-    std::cout << "Calculating values...\n";
+    //std::cout << "Calculating values...\n";
     forwardPropigation(inputs);
-    return inputs;
+    std::vector<double> results;
+    results = arma::conv_to<std::vector<double> >::from(finalValues);
+    return results;
 }
 
-void Neural_Network_t::buildNetwork(std::vector<std::vector<double> > training, int number_runs){
+void Neural_Network_t::buildNetwork(Data training, int number_runs){
+    arma::mat partial;
+    std::vector< std::vector<double> > inputs = training.getQuestions();
+    std::vector< std::vector<double> > answers = training.getAnswers();
+    for(int i = 0; i < inputs.size(); i++)
+        inputs[i].erase(inputs[i].begin());
+    int m = training.getQuestions().size();
+    double factor = 0;
+    double stepSize = 1;
     std::cout << "Building network...\n";
-    backPropigation(training[0]);
+    for(int j = 0; j < number_runs; j++){
+        backPropigation(inputs, answers);
+        for(int i = 0; i < number_of_layers; i++){
+            partial = (layers[i]->deltas)/m + factor*layers[i]->weights;
+            //std::cout << "Run " << j << " Layer " << i << std::endl;
+            //partial.print();
+            layers[i]->weights = layers[i]->weights - stepSize*partial;
+        }
+    }
 }
 
 /////////////////////////////////////////////
@@ -118,7 +143,7 @@ Neural_Network_Layer_t::Neural_Network_Layer_t(int nodes_ahead, int nodes_in_lay
     arma::mat temp2(nodes_in_layer,nodes_in_sending_layer);
     weights = temp1;
     deltas = temp2;
-    weights.fill(1);
+    weights.randu();
     deltas.fill(0);
     for(int i = 0; i < nodes_in_layer; i++){
         values << 0;

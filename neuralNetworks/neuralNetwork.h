@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <armadillo>
+#include "data.h"
 
 struct Neural_Network_Layer_t{
     int number_of_nodes;
@@ -36,14 +37,14 @@ private:
     int number_of_outputs;
     std::vector<Neural_Network_Layer_t * > layers;
     bool forwardPropigation(std::vector<double> inputs);
-    bool backPropigation(std::vector<double> answers);
+    bool backPropigation(std::vector< std::vector<double> > inputs, std::vector< std::vector<double> > answers);
     bool getDeltas(std::vector<double> answers);
     arma::vec finalValues;
     
 public:
     Neural_Network_t(int inputs, int layers, int outputs);
     std::vector<double> sendData(std::vector<double> inputs);
-    void buildNetwork(std::vector<std::vector<double> > training, int number_runs);
+    void buildNetwork(Data training, int number_runs);
     void showNetworkInfo();
 };
 
