@@ -27,4 +27,8 @@ public:
 
 };
   
+<<<<<<< HEAD
 #endif /* data_hpp */
+=======
+#endif /* data_hpp */
+>>>>>>> carlBranch
