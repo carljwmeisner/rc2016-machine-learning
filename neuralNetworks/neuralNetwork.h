@@ -1,9 +1,10 @@
+
 //
-//  Expansion.hpp
+//  neuralNetwork.h
 //  
 //
 //  Created by Gableman, Michael on 2/2/16.
-//
+//  Added helper functions for back propagation Carl M. 4/19/16
 //
 
 #ifndef Neural_Network_t_hpp
@@ -36,7 +37,7 @@ private:
     std::vector<Neural_Network_Layer_t * > layers;
     bool forwardPropigation(std::vector<double> inputs);
     bool backPropigation(std::vector<double> answers);
-    
+    bool getDeltas(std::vector<double> answers);
     arma::vec finalValues;
     
 public:

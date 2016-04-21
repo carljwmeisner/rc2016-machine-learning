@@ -15,11 +15,12 @@ int main(){
     cout << "Hello, World!\n";
     vector<double> oneInput;
     vector<vector<double> > allInput;
-    Neural_Network_t test(3,1,5);
+    Neural_Network_t test(4,2,1);
     
     oneInput.push_back(5.2);
     oneInput.push_back(10);
     oneInput.push_back(-1);
+    oneInput.push_back(9);
 //    allInput.push_back(oneInput);
     
     test.showNetworkInfo();
