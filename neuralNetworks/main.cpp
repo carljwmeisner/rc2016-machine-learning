@@ -39,20 +39,27 @@ int main(){
     alter(test,crossVal,normChange);
     Data normTrain("NormTrain.txt"), normTest("NormTest.txt"), normCrossVal("normCrossVal.txt");
     
+    std::cout<<train.getQuestions()[0].size()-1 <<std::endl;
     
-    Neural_Network_t network(normTrain.getQuestions()[0].size()-1,2,1);
+    Neural_Network_t network(train.getQuestions()[0].size()-1,2,1);
     network.showNetworkInfo();
-    network.buildNetwork(normTrain,15);
+    network.buildNetwork(train,100);
     network.showNetworkInfo();
-    std::vector<std::vector<double> > inputs = normTest.getQuestions();
-    std::vector<std::vector<double> > answers = normTest.getAnswers();
+    std::vector<std::vector<double> > inputs = test.getQuestions();
+    std::vector<std::vector<double> > answers = test.getAnswers();
     std::vector<double> tempInput;
     std::vector<double> tempOutput;
-    for(int i = 0; i < 5; i++){
+    for(int i = 0; i < 10; i++){
         tempInput = inputs[i];
         tempInput.erase(tempInput.begin());
         tempOutput = network.sendData(tempInput);
-        std::cout<< "For inputs (" << tempInput[0] << "," << tempInput[1] << "), the estimated value is " << tempOutput[1] << " and the real value is " << answers[i][0] << ".\n";
+        std::cout<< "For inputs (" << tempInput[0] << "," << tempInput[1] << "), the estimated value is " << tempOutput[0] << " and the real value is " << answers[i][0] << ".\n";
+    }
+    for(int i = 0; i < 0; i++){
+        tempInput = inputs[i];
+        tempInput.erase(tempInput.begin());
+        tempOutput = network.sendData(tempInput);
+    std::cout << tempInput[0] << "," <<  tempInput[1] << "," << tempOutput[0] << "," << answers[i][0] << "\n";
     }
     
     

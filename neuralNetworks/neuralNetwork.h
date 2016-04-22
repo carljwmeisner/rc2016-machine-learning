@@ -39,6 +39,7 @@ private:
     bool forwardPropigation(std::vector<double> inputs);
     bool backPropigation(std::vector< std::vector<double> > inputs, std::vector< std::vector<double> > answers);
     bool getDeltas(std::vector<double> answers);
+    void getError( std::vector< std::vector<double> > inputs, std::vector< std::vector<double> > answers);
     arma::vec finalValues;
     
 public:
