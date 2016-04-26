@@ -10,6 +10,7 @@
 #include <vector>
 #include <fstream>
 #include <cstdlib>
+#include <unistd.h>
 
 #include "data.h"
 #include "LinearRegression.h"
@@ -35,38 +36,57 @@ vector<double> addAlter(normStats*, vector<double>);
 
 void alter(Data,Data,normStats*);
 
-int main()
+int main(int argc, char **argv)
 {
-    Data mainData("realData4.txt");  //set this to file containing data
-    split(7,2,1,mainData);          //select ratio of split between training:testing:crossValidation
-    Data train("train.txt"), test("test.txt"), crossVal("crossVal.txt");  //creates data objects for training, testing and cross val, split will create needed files.
-    
-    
-    normStats * normChange = normalize(train);
-    alter(test,crossVal,normChange);
-    Data normTrain("NormTrain.txt"), normTest("NormTest.txt"), normCrossVal("normCrossVal.txt");
-    
-    
-    LinearRegression predictor(normTrain, normTest, normCrossVal);
-    predictor.createHypothesis(1,500,false);  // step size, number steps, include status print statments (output will get long if marked true)
-    cout << "Error from hypothesis after run: " << predictor.checkAcc(false) << endl;  //include status print statements (output will get long if marked true)
-    vector<double> guess = predictor.returnVectorHypothesis();
-    cout << "Coeffents on vector are : ";
-    for(int i = 0; i < guess.size(); i++)
-    {
-        cout << guess[i] << " : ";
-    }
-    cout << endl;
-    vector<double> newGuess = addAlter(normChange,guess);
-    cout << "Altered guess: ";
-    for(int i = 0; i < newGuess.size(); i++)
-    {
-        cout << newGuess[i] << " : ";
-    }
-    cout << endl;
+  string targetDataFile = "demo.txt";
+  int stepSize = 1;
+  int numberOfSteps = 500;
+  bool verbose = false;
+  int option_char;
 
-    
-    return 0;
+  
+  while((option_char = getopt(argc, argv, "d:s:n:v")) != -1)
+    {
+      switch(option_char)
+	{
+	case 'd': targetDataFile.assign(optarg); cout << optarg << " " << "\n"; break;
+	case 's': stepSize = atoi(optarg); break;
+	case 'n': numberOfSteps = atoi(optarg); break;
+	case 'v': verbose = true; break;
+	}
+    }
+  cout << targetDataFile << " " << stepSize << " " << numberOfSteps << " " << verbose << "\n";
+  	
+  Data mainData(targetDataFile);  //set this to file containing data
+  split(7,2,1,mainData);          //select ratio of split between training:testing:crossValidation
+  Data train("train.txt"), test("test.txt"), crossVal("crossVal.txt");  //creates data objects for training, testing and cross val, split will create needed files.
+  
+  
+  normStats * normChange = normalize(train);
+  alter(test,crossVal,normChange);
+  Data normTrain("NormTrain.txt"), normTest("NormTest.txt"), normCrossVal("normCrossVal.txt");
+  
+  
+  LinearRegression predictor(normTrain, normTest, normCrossVal);
+  predictor.createHypothesis(stepSize,numberOfSteps,verbose);  // step size, number steps, include status print statments (output will get long if marked true)
+  cout << "Error from hypothesis after run: " << predictor.checkAcc(verbose) << endl;  //include status print statements (output will get long if marked true)
+  vector<double> guess = predictor.returnVectorHypothesis();
+  cout << "Coeffents on vector are : ";
+  for(int i = 0; i < guess.size(); i++)
+    {
+      cout << guess[i] << " : ";
+    }
+  cout << endl;
+  vector<double> newGuess = addAlter(normChange,guess);
+  cout << "Altered guess: ";
+  for(int i = 0; i < newGuess.size(); i++)
+    {
+      cout << newGuess[i] << " : ";
+    }
+  cout << endl;
+  
+  
+  return 0;
 }
 
 void split(int p_train,int p_test,int p_crossVal,Data original)

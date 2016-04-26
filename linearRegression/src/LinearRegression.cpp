@@ -1,6 +1,6 @@
 //
 //  LinearRegression.cpp
-//  
+//  used for linear regression?
 //
 //  Created by Gableman, Michael on 2/2/16.
 //
@@ -122,6 +122,7 @@ double LinearRegression::checkAcc(bool showPrints)
     error = error/(2*ans.size());  //find final error
     return error;
 }
+
 
 string LinearRegression::returnStringHypothesis()
 {

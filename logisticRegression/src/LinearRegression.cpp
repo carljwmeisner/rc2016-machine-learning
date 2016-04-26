@@ -1,6 +1,6 @@
 //
 //  LinearRegression.cpp
-//  
+//  Used for logistic regression ?
 //
 //  Created by Gableman, Michael on 2/2/16.
 //
