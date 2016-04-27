@@ -8,6 +8,8 @@
 
 #include<iostream>
 #include<vector>
+#include<cstdlib>
+#include<ctime>
 #include "neuralNetwork.h"
 #include "data.h"
 using namespace std;
@@ -32,7 +34,8 @@ vector<double> addAlter(normStats*, vector<double>);
 void alter(Data,Data,normStats*);
 
 int main(){
-    Data mainData("realData.txt");
+    srand(time(NULL));
+    Data mainData("circleClassificationClean.txt");
     split(7,2,1,mainData);
     Data train("train.txt"), test("test.txt"), crossVal("crossVal.txt");  //creates data objects for training, testing and cross val, split will create needed files.
     normStats * normChange = normalize(train);
@@ -41,12 +44,12 @@ int main(){
     
     std::cout<<train.getQuestions()[0].size()-1 <<std::endl;
     
-    Neural_Network_t network(normTrain.getQuestions()[0].size()-1,10,1);
+    Neural_Network_t network(normTrain.getQuestions()[0].size()-1,1,1,1);
     network.showNetworkInfo();
-    network.buildNetwork(train,100);
+    network.buildNetwork(train,1000,1,100,10);
     network.showNetworkInfo();
-    std::vector<std::vector<double> > inputs = normTrain.getQuestions();
-    std::vector<std::vector<double> > answers = normTrain.getAnswers();
+    std::vector<std::vector<double> > inputs = normTest.getQuestions();
+    std::vector<std::vector<double> > answers = normTest.getAnswers();
     std::vector<double> tempInput;
     std::vector<double> tempOutput;
     for(int i = 0; i < 10; i++){
