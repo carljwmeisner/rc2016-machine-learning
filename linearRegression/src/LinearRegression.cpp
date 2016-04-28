@@ -44,7 +44,7 @@ vector<double> LinearRegression::createHypothesis(double growthFactor, int steps
     double singleAnswer, sum;                                          //coeffientsTemp stores values until coeffients can be overwritten
     int sizeOfData = train.getQuestions().size();
     int sizeOfQuestion = train.getQuestion(0).size();
-    cout << endl << sizeOfQuestion << endl;
+    //    cout << endl << sizeOfQuestion << endl;
     for(int i = 0; i < sizeOfQuestion; i++)  //loop to initilize theta, and coeffients
     {
         theta.push_back(0.0);
@@ -63,7 +63,7 @@ vector<double> LinearRegression::createHypothesis(double growthFactor, int steps
                     cout << testSingleHypothesis(j,coeffients,showPrints) << " * " << train.getQuestion(j)[i] << " := " << theta[i] << endl;
             }
             if(showPrints)
-                cout << endl;
+	      cout << endl;
             theta[i] = theta[i]*growthFactor/sizeOfData;
             coeffientsTemp[i] = coeffients[i] - theta[i];  // finds new coeffient
         }

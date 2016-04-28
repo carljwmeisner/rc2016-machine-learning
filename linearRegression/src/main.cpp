@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	case 'v': verbose = true; break;
 	}
     }
-  cout << targetDataFile << " " << stepSize << " " << numberOfSteps << " " << verbose << "\n";
+  //cout << targetDataFile << " " << stepSize << " " << numberOfSteps << " " << verbose << "\n";
   	
   Data mainData(targetDataFile);  //set this to file containing data
   split(7,2,1,mainData);          //select ratio of split between training:testing:crossValidation

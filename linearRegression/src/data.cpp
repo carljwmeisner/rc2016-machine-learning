@@ -91,7 +91,7 @@ bool Data::readInFile(std::string TARGET)//read in a file from location given by
   }
 
   fs >> dataSet;
-  std::cout << dataSet.size() << std::endl;
+  //std::cout << dataSet.size() << std::endl;
   /*std::string tmpLine, tmpString;
     std::vector<double> tmpVector;
     while(std::getline(fs, tmpLine))
